@@ -1,5 +1,4 @@
-import { FFmpeg } from 'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js';
-import { fetchFile } from 'https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js';
+import { FFmpeg } from './lib/ffmpeg/index.js';
 
 // ── State ──────────────────────────────────────────────────────────────────
 let ffmpeg = null;
@@ -45,6 +44,7 @@ async function initFFmpeg() {
     // シングルスレッド版WASMを使用（SharedArrayBuffer不要→GitHub Pagesで動作）
     await ffmpeg.load({
       coreURL: 'https://unpkg.com/@ffmpeg/core-st@0.12.6/dist/esm/ffmpeg-core.js',
+      wasmURL: 'https://unpkg.com/@ffmpeg/core-st@0.12.6/dist/esm/ffmpeg-core.wasm',
     });
     ffmpegReady = true;
     hideStatus();
@@ -221,7 +221,7 @@ mergeBtn.addEventListener('click', async () => {
       const ext = name.split('.').pop().toLowerCase();
       const fname = `input_${i}.${ext}`;
       setStatus(`ファイルを読み込み中 (${i + 1}/${videoFiles.length})...`);
-      await ffmpeg.writeFile(fname, await fetchFile(file));
+      await ffmpeg.writeFile(fname, new Uint8Array(await file.arrayBuffer()));
     }
 
     // concat.txt を作成

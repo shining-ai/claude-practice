@@ -1,0 +1,228 @@
+.item {
+  background: white;
+  padding: 18px;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.item.completed {
+  opacity: 0.7;
+  background: #f9f9f9;
+}
+
+.item.overdue {
+  border-left-color: #ff6b6b;
+  background: #fff5f5;
+}
+
+.content {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.todoContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1em;
+  color: #333;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.item.completed .title {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.priority {
+  font-size: 0.75em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.priority-low {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.priority-medium {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.priority-high {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.description {
+  margin: 8px 0 10px 0;
+  color: #666;
+  font-size: 0.95em;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.85em;
+}
+
+.category {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #666;
+}
+
+.dueDate {
+  color: #666;
+}
+
+.overdueText {
+  color: #ff6b6b !important;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.editBtn,
+.deleteBtn,
+.saveBtn,
+.cancelBtn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.2s;
+}
+
+.editBtn {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.editBtn:hover {
+  background: #bbdefb;
+}
+
+.deleteBtn {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.deleteBtn:hover {
+  background: #ffcdd2;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.editInput,
+.editTextarea {
+  padding: 10px;
+  border: 2px solid #667eea;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95em;
+}
+
+.editInput:focus,
+.editTextarea:focus {
+  outline: none;
+  border-color: #764ba2;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.editActions {
+  display: flex;
+  gap: 10px;
+}
+
+.saveBtn {
+  background: #4caf50;
+  color: white;
+  flex: 1;
+}
+
+.saveBtn:hover {
+  background: #45a049;
+}
+
+.cancelBtn {
+  background: #f0f0f0;
+  color: #666;
+  flex: 1;
+}
+
+.cancelBtn:hover {
+  background: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .item {
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .titleRow {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .editBtn,
+  .deleteBtn {
+    flex: 1;
+  }
+}

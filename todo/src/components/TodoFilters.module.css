@@ -1,0 +1,85 @@
+.filters {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  align-items: end;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filterGroup label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.filterGroup select {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95em;
+  cursor: pointer;
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.filterGroup select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.statusGroup {
+  display: flex;
+  gap: 12px;
+}
+
+.statusGroup label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  font-size: 0.95em;
+}
+
+.statusGroup input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.clearBtn {
+  padding: 8px 16px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.clearBtn:hover {
+  background: #e0e0e0;
+  border-color: #999;
+}
+
+@media (max-width: 768px) {
+  .filters {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .statusGroup {
+    justify-content: space-between;
+  }
+}

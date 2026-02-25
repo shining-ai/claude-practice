@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>動画結合アプリ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>動画結合アプリ</h1>
+      <p class="subtitle">MP4・MOV ファイルをブラウザ上で結合してダウンロード</p>
+    </header>
+
+    <div id="status-bar" class="status-bar hidden">
+      <span id="status-text">FFmpeg を初期化中...</span>
+    </div>
+
+    <section class="upload-area" id="drop-zone">
+      <div class="upload-icon">&#128249;</div>
+      <p>動画ファイルをここにドロップ</p>
+      <p class="hint">または</p>
+      <label class="btn btn-secondary" for="file-input">
+        ファイルを選択
+      </label>
+      <input type="file" id="file-input" accept="video/mp4,video/quicktime,.mp4,.mov" multiple hidden>
+      <p class="hint">MP4・MOV 対応 / 複数選択可</p>
+    </section>
+
+    <section id="video-list-section" class="hidden">
+      <div class="section-header">
+        <h2>結合する動画 <span id="video-count" class="badge">0</span></h2>
+        <button class="btn btn-ghost" id="clear-btn">すべて削除</button>
+      </div>
+      <p class="hint">ドラッグして順序を変更できます</p>
+      <ul id="video-list" class="video-list"></ul>
+    </section>
+
+    <section id="merge-section" class="hidden">
+      <div id="progress-container" class="hidden">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <p id="progress-text" class="progress-text">処理中... 0%</p>
+      </div>
+      <button class="btn btn-primary" id="merge-btn">
+        <span>&#9654;</span> 動画を結合する
+      </button>
+    </section>
+
+    <section id="result-section" class="hidden">
+      <h2>完成!</h2>
+      <video id="result-video" controls class="result-video"></video>
+      <a id="download-link" class="btn btn-primary" download="merged.mp4">
+        &#8595; ダウンロード
+      </a>
+      <button class="btn btn-secondary" id="reset-btn">最初からやり直す</button>
+    </section>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -38,9 +38,12 @@ jobs:
         run: npm run build
         working-directory: todo
 
+      - name: Prepare deploy directory
+        run: mkdir -p deploy/todo && cp -r todo/dist/. deploy/todo/
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: todo/dist
+          path: deploy
 
   deploy:
     needs: build

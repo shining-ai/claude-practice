@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - video_merger_tmp:/tmp/video-merger
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  video_merger_tmp:

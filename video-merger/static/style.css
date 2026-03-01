@@ -1,0 +1,252 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: #0f0f13;
+  color: #e0e0e0;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.container {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-top: -16px;
+}
+
+/* Drop zone */
+.drop-zone {
+  border: 2px dashed #333;
+  border-radius: 16px;
+  background: #16161e;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.drop-zone:hover,
+.drop-zone.dragover {
+  border-color: #5865f2;
+  background: #1a1a2e;
+}
+
+.drop-icon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.drop-text {
+  font-size: 1.05rem;
+  color: #ccc;
+}
+
+.drop-sub {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.btn-select {
+  display: inline-block;
+  background: #5865f2;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: 600;
+}
+
+.btn-select:hover {
+  background: #4752c4;
+}
+
+.supported {
+  color: #555;
+  font-size: 0.82rem;
+  margin-top: 4px;
+}
+
+/* File list */
+.file-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1c1c26;
+  border: 1px solid #2a2a3a;
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: grab;
+  transition: background 0.15s, border-color 0.15s;
+  user-select: none;
+}
+
+.file-item:hover {
+  border-color: #4a4a6a;
+}
+
+.file-item.dragging {
+  opacity: 0.5;
+}
+
+.file-item.drag-over {
+  border-color: #5865f2;
+  background: #1a1a2e;
+}
+
+.drag-handle {
+  color: #555;
+  font-size: 1.1rem;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.file-info {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-delete:hover {
+  color: #ff6b6b;
+  background: #2a1a1a;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-merge {
+  flex: 1;
+  background: #5865f2;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-merge:hover:not(:disabled) {
+  background: #4752c4;
+}
+
+.btn-merge:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-merge:disabled {
+  background: #2a2a3a;
+  color: #555;
+  cursor: not-allowed;
+}
+
+.btn-clear {
+  background: #2a2a3a;
+  color: #aaa;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-clear:hover {
+  background: #333344;
+}
+
+/* Progress */
+.progress-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #2a2a3a;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5865f2, #7289da);
+  border-radius: 999px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  color: #aaa;
+  text-align: center;
+}
+
+/* Error */
+.error-area {
+  background: #2a1a1a;
+  border: 1px solid #5a2020;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.error-msg {
+  color: #ff8080;
+  font-size: 0.9rem;
+}

@@ -73,6 +73,12 @@ def get_video_info(filepath):
         'height': height,
         'duration': duration,
         'has_audio': audio_stream is not None,
+        'video_codec': video_stream.get('codec_name'),
+        'fps': video_stream.get('r_frame_rate'),
+        'pix_fmt': video_stream.get('pix_fmt'),
+        'audio_codec': audio_stream.get('codec_name') if audio_stream else None,
+        'audio_sample_rate': audio_stream.get('sample_rate') if audio_stream else None,
+        'audio_channels': str(audio_stream.get('channels')) if audio_stream else None,
     }
 
 
@@ -212,6 +218,35 @@ def build_merge_cmd(final_sequence, output_path):
     ]
 
 
+def can_fast_concat(final_sequence):
+    """Return True if all items are real videos with identical format (stream copy is safe)."""
+    if any(item.get('is_text_card') for item in final_sequence):
+        return False
+    first = final_sequence[0]['info']
+    keys = ['width', 'height', 'video_codec', 'fps', 'pix_fmt',
+            'has_audio', 'audio_codec', 'audio_sample_rate', 'audio_channels']
+    for item in final_sequence[1:]:
+        if any(item['info'].get(k) != first.get(k) for k in keys):
+            return False
+    return True
+
+
+def build_fast_concat_cmd(final_sequence, output_path, session_dir):
+    """Build FFmpeg command using concat demuxer (no re-encoding)."""
+    concat_file = os.path.join(session_dir, 'concat.txt')
+    with open(concat_file, 'w') as f:
+        for item in final_sequence:
+            f.write(f"file '{item['path']}'\n")
+    return [
+        'ffmpeg', '-y',
+        '-f', 'concat', '-safe', '0',
+        '-i', concat_file,
+        '-c', 'copy',
+        '-movflags', '+faststart',
+        output_path,
+    ]
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -277,6 +312,7 @@ def merge_videos():
                 final_sequence.append({
                     'path': saved_videos[video_idx],
                     'info': video_infos[video_idx],
+                    'is_text_card': False,
                 })
                 video_idx += 1
 
@@ -297,10 +333,15 @@ def merge_videos():
                         'duration': duration,
                         'has_audio': False,
                     },
+                    'is_text_card': True,
                 })
 
         output_path = os.path.join(app.config['OUTPUT_FOLDER'], f'{session_id}.mp4')
-        cmd = build_merge_cmd(final_sequence, output_path)
+        if can_fast_concat(final_sequence):
+            app.logger.info('Fast concat mode (stream copy).')
+            cmd = build_fast_concat_cmd(final_sequence, output_path, session_dir)
+        else:
+            cmd = build_merge_cmd(final_sequence, output_path)
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
 
         if result.returncode != 0:

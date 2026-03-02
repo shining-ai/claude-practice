@@ -9,7 +9,7 @@
 <body>
   <div class="container">
     <h1>動画結合ツール</h1>
-    <p class="subtitle">複数の動画を1つに結合します。解像度が異なる場合は最大サイズに合わせて黒帯を追加します。</p>
+    <p class="subtitle">複数の動画を順番に結合します。動画間にテロップカードを挿入することもできます。</p>
 
     <div class="drop-zone" id="dropZone">
       <div class="drop-icon">🎬</div>
@@ -20,7 +20,7 @@
       <p class="supported">対応形式: MP4, MOV, AVI, MKV, WebM, FLV, M4V</p>
     </div>
 
-    <ul class="file-list" id="fileList"></ul>
+    <ul class="item-list" id="itemList"></ul>
 
     <div class="actions">
       <button class="btn-merge" id="mergeBtn" disabled>結合する</button>
@@ -40,85 +40,205 @@
   </div>
 
   <script>
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const fileList = document.getElementById('fileList');
-    const mergeBtn = document.getElementById('mergeBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const progressArea = document.getElementById('progressArea');
-    const progressFill = document.getElementById('progressFill');
-    const progressText = document.getElementById('progressText');
-    const errorArea = document.getElementById('errorArea');
-    const errorMsg = document.getElementById('errorMsg');
+    // items: Array of {id, type:'video', file:File} | {id, type:'text', text:string, duration:number}
+    let items = [];
+    let dragSrcIndex = null;
 
-    let selectedFiles = [];
+    const dropZone   = document.getElementById('dropZone');
+    const fileInput  = document.getElementById('fileInput');
+    const itemList   = document.getElementById('itemList');
+    const mergeBtn   = document.getElementById('mergeBtn');
+    const clearBtn   = document.getElementById('clearBtn');
+    const progressArea  = document.getElementById('progressArea');
+    const progressFill  = document.getElementById('progressFill');
+    const progressText  = document.getElementById('progressText');
+    const errorArea  = document.getElementById('errorArea');
+    const errorMsg   = document.getElementById('errorMsg');
 
-    // Drag & drop events
+    function genId() { return Math.random().toString(36).slice(2); }
+
+    // ---- Drop zone ----
     dropZone.addEventListener('dragover', e => {
-      e.preventDefault();
-      dropZone.classList.add('dragover');
+      if ([...e.dataTransfer.types].includes('Files')) {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      }
     });
-
-    dropZone.addEventListener('dragleave', () => {
-      dropZone.classList.remove('dragover');
-    });
-
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
     dropZone.addEventListener('drop', e => {
       e.preventDefault();
       dropZone.classList.remove('dragover');
-      addFiles([...e.dataTransfer.files]);
+      addVideoFiles([...e.dataTransfer.files]);
     });
-
     fileInput.addEventListener('change', () => {
-      addFiles([...fileInput.files]);
+      addVideoFiles([...fileInput.files]);
       fileInput.value = '';
     });
 
-    function addFiles(newFiles) {
-      const videoFiles = newFiles.filter(f => f.type.startsWith('video/') || /\.(mp4|mov|avi|mkv|webm|flv|m4v)$/i.test(f.name));
-      videoFiles.forEach(f => selectedFiles.push(f));
-      renderFileList();
+    function addVideoFiles(files) {
+      files
+        .filter(f => f.type.startsWith('video/') || /\.(mp4|mov|avi|mkv|webm|flv|m4v)$/i.test(f.name))
+        .forEach(f => items.push({ id: genId(), type: 'video', file: f }));
+      render();
     }
 
-    function renderFileList() {
-      fileList.innerHTML = '';
-      selectedFiles.forEach((file, i) => {
-        const li = document.createElement('li');
-        li.className = 'file-item';
-        li.draggable = true;
-        li.dataset.index = i;
+    // ---- Render ----
+    function render() {
+      itemList.innerHTML = '';
 
-        const handle = document.createElement('span');
-        handle.className = 'drag-handle';
-        handle.textContent = '⠿';
-
-        const info = document.createElement('span');
-        info.className = 'file-info';
-        info.textContent = `${i + 1}. ${file.name} (${formatSize(file.size)})`;
-
-        const del = document.createElement('button');
-        del.className = 'btn-delete';
-        del.textContent = '✕';
-        del.addEventListener('click', () => {
-          selectedFiles.splice(i, 1);
-          renderFileList();
+      if (items.length > 0) {
+        itemList.appendChild(makeInsertZone(0));
+        items.forEach((item, i) => {
+          itemList.appendChild(makeItemRow(item, i));
+          itemList.appendChild(makeInsertZone(i + 1));
         });
+      }
 
-        li.appendChild(handle);
-        li.appendChild(info);
-        li.appendChild(del);
-        fileList.appendChild(li);
+      const videoCount = items.filter(it => it.type === 'video').length;
+      mergeBtn.disabled = videoCount === 0 || items.length < 2;
+      clearBtn.hidden = items.length === 0;
+      hideError();
+    }
 
-        // Drag to reorder
-        li.addEventListener('dragstart', onDragStart);
-        li.addEventListener('dragover', onDragOver);
-        li.addEventListener('drop', onDrop);
-        li.addEventListener('dragend', onDragEnd);
+    // ---- Insert zone ----
+    function makeInsertZone(insertIdx) {
+      const div = document.createElement('div');
+      div.className = 'insert-zone';
+      div.dataset.insertIdx = insertIdx;
+
+      const btn = document.createElement('button');
+      btn.className = 'btn-insert';
+      btn.textContent = '+ テロップを挿入';
+      btn.addEventListener('click', () => {
+        items.splice(insertIdx, 0, { id: genId(), type: 'text', text: '', duration: 3 });
+        render();
+        // Focus the textarea of the newly inserted item
+        const textareas = itemList.querySelectorAll('.text-input');
+        const insertedTextarea = [...textareas][insertIdx];
+        if (insertedTextarea) insertedTextarea.focus();
+      });
+      div.appendChild(btn);
+
+      // Drop target for reorder
+      div.addEventListener('dragover', e => { e.preventDefault(); div.classList.add('drag-over'); });
+      div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
+      div.addEventListener('drop', e => {
+        e.preventDefault();
+        div.classList.remove('drag-over');
+        if (dragSrcIndex === null) return;
+        let targetIdx = parseInt(div.dataset.insertIdx);
+        if (dragSrcIndex < targetIdx) targetIdx--;
+        const [moved] = items.splice(dragSrcIndex, 1);
+        items.splice(targetIdx, 0, moved);
+        dragSrcIndex = null;
+        render();
       });
 
-      mergeBtn.disabled = selectedFiles.length < 2;
-      clearBtn.hidden = selectedFiles.length === 0;
-      hideError();
+      return div;
+    }
+
+    // ---- Item row ----
+    function makeItemRow(item, i) {
+      const li = document.createElement('li');
+      li.className = `item-row ${item.type}-item`;
+      li.dataset.index = i;
+
+      // Drag handle
+      const handle = document.createElement('span');
+      handle.className = 'drag-handle';
+      handle.textContent = '⠿';
+      handle.title = 'ドラッグして並び替え';
+      handle.addEventListener('mousedown', () => { li.draggable = true; });
+
+      li.addEventListener('dragstart', e => {
+        dragSrcIndex = i;
+        li.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(i));
+      });
+      li.addEventListener('dragend', () => {
+        li.classList.remove('dragging');
+        li.draggable = false;
+        document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+        dragSrcIndex = null;
+      });
+
+      // Delete button
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-delete';
+      delBtn.textContent = '✕';
+      delBtn.title = '削除';
+      delBtn.addEventListener('click', () => { items.splice(i, 1); render(); });
+
+      // Icon
+      const icon = document.createElement('span');
+      icon.className = 'item-icon';
+
+      li.appendChild(handle);
+      li.appendChild(icon);
+
+      if (item.type === 'video') {
+        icon.textContent = '🎬';
+        const info = document.createElement('div');
+        info.className = 'item-info';
+
+        const name = document.createElement('span');
+        name.className = 'item-name';
+        name.textContent = item.file.name;
+
+        const meta = document.createElement('span');
+        meta.className = 'item-meta';
+        meta.textContent = formatSize(item.file.size);
+
+        info.appendChild(name);
+        info.appendChild(meta);
+        li.appendChild(info);
+
+      } else {
+        // Text card
+        icon.textContent = '📝';
+        const content = document.createElement('div');
+        content.className = 'text-card-content';
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'text-input';
+        textarea.placeholder = 'テキストを入力（Enterで改行）';
+        textarea.rows = 2;
+        textarea.value = item.text;
+        textarea.addEventListener('input', () => { item.text = textarea.value; });
+        textarea.addEventListener('mousedown', e => e.stopPropagation());
+
+        const durationRow = document.createElement('div');
+        durationRow.className = 'duration-row';
+
+        const label = document.createElement('label');
+        label.textContent = '表示時間:';
+
+        const durInput = document.createElement('input');
+        durInput.type = 'number';
+        durInput.className = 'duration-input';
+        durInput.value = item.duration;
+        durInput.min = 0.5;
+        durInput.max = 60;
+        durInput.step = 0.5;
+        durInput.addEventListener('change', () => {
+          item.duration = Math.max(0.5, parseFloat(durInput.value) || 3);
+        });
+        durInput.addEventListener('mousedown', e => e.stopPropagation());
+
+        const unit = document.createElement('span');
+        unit.textContent = '秒';
+
+        durationRow.appendChild(label);
+        durationRow.appendChild(durInput);
+        durationRow.appendChild(unit);
+        content.appendChild(textarea);
+        content.appendChild(durationRow);
+        li.appendChild(content);
+      }
+
+      li.appendChild(delBtn);
+      return li;
     }
 
     function formatSize(bytes) {
@@ -127,42 +247,10 @@
       return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
     }
 
-    // Drag to reorder
-    let dragSrcIndex = null;
+    // ---- Clear ----
+    clearBtn.addEventListener('click', () => { items = []; render(); });
 
-    function onDragStart(e) {
-      dragSrcIndex = parseInt(this.dataset.index);
-      this.classList.add('dragging');
-    }
-
-    function onDragOver(e) {
-      e.preventDefault();
-      this.classList.add('drag-over');
-    }
-
-    function onDrop(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      const targetIndex = parseInt(this.dataset.index);
-      if (dragSrcIndex !== null && dragSrcIndex !== targetIndex) {
-        const moved = selectedFiles.splice(dragSrcIndex, 1)[0];
-        selectedFiles.splice(targetIndex, 0, moved);
-        renderFileList();
-      }
-    }
-
-    function onDragEnd() {
-      document.querySelectorAll('.file-item').forEach(el => {
-        el.classList.remove('dragging', 'drag-over');
-      });
-      dragSrcIndex = null;
-    }
-
-    clearBtn.addEventListener('click', () => {
-      selectedFiles = [];
-      renderFileList();
-    });
-
+    // ---- Merge ----
     mergeBtn.addEventListener('click', async () => {
       hideError();
       progressArea.hidden = false;
@@ -171,16 +259,24 @@
       animateProgress();
 
       const formData = new FormData();
-      selectedFiles.forEach(f => formData.append('videos', f));
+      const itemsDesc = [];
+
+      items.forEach(item => {
+        if (item.type === 'video') {
+          formData.append('videos', item.file);
+          itemsDesc.push({ type: 'video' });
+        } else {
+          itemsDesc.push({ type: 'text', text: item.text, duration: item.duration });
+        }
+      });
+      formData.append('items', JSON.stringify(itemsDesc));
 
       try {
         const res = await fetch('/merge', { method: 'POST', body: formData });
-
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           throw new Error(data.error || `サーバーエラー (${res.status})`);
         }
-
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -197,8 +293,9 @@
         setTimeout(() => {
           progressArea.hidden = true;
           progressFill.style.width = '0%';
-          mergeBtn.disabled = selectedFiles.length < 2;
-          clearBtn.hidden = selectedFiles.length === 0;
+          const videoCount = items.filter(it => it.type === 'video').length;
+          mergeBtn.disabled = videoCount === 0 || items.length < 2;
+          clearBtn.hidden = items.length === 0;
         }, 2000);
       }
     });
@@ -207,25 +304,16 @@
       progressFill.style.width = '0%';
       progressText.textContent = '処理中... しばらくお待ちください';
       let pct = 0;
-      const interval = setInterval(() => {
-        if (pct < 90) {
-          pct += Math.random() * 3;
-          progressFill.style.width = `${Math.min(pct, 90)}%`;
-        } else {
-          clearInterval(interval);
-        }
+      const iv = setInterval(() => {
+        if (pct < 90) { pct += Math.random() * 3; progressFill.style.width = `${Math.min(pct, 90)}%`; }
+        else clearInterval(iv);
       }, 400);
     }
 
-    function showError(msg) {
-      errorMsg.textContent = msg;
-      errorArea.hidden = false;
-      progressArea.hidden = true;
-    }
+    function showError(msg) { errorMsg.textContent = msg; errorArea.hidden = false; progressArea.hidden = true; }
+    function hideError() { errorArea.hidden = true; }
 
-    function hideError() {
-      errorArea.hidden = true;
-    }
+    render();
   </script>
 </body>
 </html>

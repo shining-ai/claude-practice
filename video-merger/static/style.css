@@ -20,7 +20,7 @@ body {
   max-width: 680px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
 h1 {
@@ -34,10 +34,10 @@ h1 {
   color: #888;
   font-size: 0.95rem;
   line-height: 1.6;
-  margin-top: -16px;
+  margin-top: -12px;
 }
 
-/* Drop zone */
+/* ---- Drop zone ---- */
 .drop-zone {
   border: 2px dashed #333;
   border-radius: 16px;
@@ -58,20 +58,9 @@ h1 {
   background: #1a1a2e;
 }
 
-.drop-icon {
-  font-size: 3rem;
-  line-height: 1;
-}
-
-.drop-text {
-  font-size: 1.05rem;
-  color: #ccc;
-}
-
-.drop-sub {
-  color: #555;
-  font-size: 0.9rem;
-}
+.drop-icon { font-size: 3rem; line-height: 1; }
+.drop-text { font-size: 1.05rem; color: #ccc; }
+.drop-sub  { color: #555; font-size: 0.9rem; }
 
 .btn-select {
   display: inline-block;
@@ -84,26 +73,71 @@ h1 {
   transition: background 0.2s;
   font-weight: 600;
 }
+.btn-select:hover { background: #4752c4; }
+.supported { color: #555; font-size: 0.82rem; margin-top: 4px; }
 
-.btn-select:hover {
-  background: #4752c4;
-}
-
-.supported {
-  color: #555;
-  font-size: 0.82rem;
-  margin-top: 4px;
-}
-
-/* File list */
-.file-list {
+/* ---- Item list ---- */
+.item-list {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
-.file-item {
+/* ---- Insert zone ---- */
+.insert-zone {
+  position: relative;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.insert-zone::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: #222;
+  transform: translateY(-50%);
+  transition: background 0.15s;
+}
+
+.insert-zone:hover::before,
+.insert-zone.drag-over::before {
+  background: #5865f2;
+}
+
+.btn-insert {
+  position: relative;
+  background: #16161e;
+  border: 1px solid #333;
+  color: #555;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 3px 14px;
+  border-radius: 999px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.insert-zone:hover .btn-insert {
+  opacity: 1;
+  pointer-events: auto;
+  color: #5865f2;
+  border-color: #5865f2;
+  background: #1a1a2e;
+}
+
+.insert-zone.drag-over {
+  height: 40px;
+}
+
+/* ---- Item row (shared) ---- */
+.item-row {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -111,33 +145,51 @@ h1 {
   border: 1px solid #2a2a3a;
   border-radius: 10px;
   padding: 12px 14px;
-  cursor: grab;
-  transition: background 0.15s, border-color 0.15s;
+  transition: border-color 0.15s;
   user-select: none;
 }
 
-.file-item:hover {
-  border-color: #4a4a6a;
-}
-
-.file-item.dragging {
-  opacity: 0.5;
-}
-
-.file-item.drag-over {
-  border-color: #5865f2;
-  background: #1a1a2e;
-}
+.item-row:hover { border-color: #3a3a5a; }
+.item-row.dragging { opacity: 0.4; }
 
 .drag-handle {
-  color: #555;
+  color: #444;
   font-size: 1.1rem;
   cursor: grab;
   flex-shrink: 0;
+  padding: 2px 4px;
+}
+.drag-handle:hover { color: #888; }
+
+.item-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
 }
 
-.file-info {
+.btn-delete {
+  background: none;
+  border: none;
+  color: #555;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.btn-delete:hover { color: #ff6b6b; background: #2a1a1a; }
+
+/* ---- Video item ---- */
+.video-item .item-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.item-name {
   font-size: 0.9rem;
   color: #ccc;
   white-space: nowrap;
@@ -145,24 +197,78 @@ h1 {
   text-overflow: ellipsis;
 }
 
-.btn-delete {
-  background: none;
-  border: none;
-  color: #666;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 4px 8px;
+.item-meta {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+/* ---- Text card item ---- */
+.text-item {
+  align-items: flex-start;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.text-item .drag-handle,
+.text-item .item-icon {
+  margin-top: 6px;
+}
+
+.text-item .btn-delete {
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+.text-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.text-input {
+  width: 100%;
+  background: #0f0f13;
+  border: 1px solid #333;
   border-radius: 6px;
-  transition: color 0.15s, background 0.15s;
-  flex-shrink: 0;
+  color: #e0e0e0;
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 8px 10px;
+  resize: vertical;
+  line-height: 1.5;
+}
+.text-input:focus {
+  outline: none;
+  border-color: #5865f2;
+}
+.text-input::placeholder { color: #444; }
+
+.duration-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #666;
 }
 
-.btn-delete:hover {
-  color: #ff6b6b;
-  background: #2a1a1a;
+.duration-input {
+  width: 64px;
+  background: #0f0f13;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #ccc;
+  font-size: 0.82rem;
+  padding: 3px 6px;
+  text-align: center;
+}
+.duration-input:focus {
+  outline: none;
+  border-color: #5865f2;
 }
 
-/* Actions */
+/* ---- Actions ---- */
 .actions {
   display: flex;
   gap: 12px;
@@ -180,20 +286,9 @@ h1 {
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
 }
-
-.btn-merge:hover:not(:disabled) {
-  background: #4752c4;
-}
-
-.btn-merge:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.btn-merge:disabled {
-  background: #2a2a3a;
-  color: #555;
-  cursor: not-allowed;
-}
+.btn-merge:hover:not(:disabled) { background: #4752c4; }
+.btn-merge:active:not(:disabled) { transform: scale(0.98); }
+.btn-merge:disabled { background: #2a2a3a; color: #555; cursor: not-allowed; }
 
 .btn-clear {
   background: #2a2a3a;
@@ -205,12 +300,9 @@ h1 {
   cursor: pointer;
   transition: background 0.2s;
 }
+.btn-clear:hover { background: #333344; }
 
-.btn-clear:hover {
-  background: #333344;
-}
-
-/* Progress */
+/* ---- Progress ---- */
 .progress-area {
   display: flex;
   flex-direction: column;
@@ -232,21 +324,13 @@ h1 {
   transition: width 0.5s ease;
 }
 
-.progress-text {
-  font-size: 0.9rem;
-  color: #aaa;
-  text-align: center;
-}
+.progress-text { font-size: 0.9rem; color: #aaa; text-align: center; }
 
-/* Error */
+/* ---- Error ---- */
 .error-area {
   background: #2a1a1a;
   border: 1px solid #5a2020;
   border-radius: 10px;
   padding: 14px 16px;
 }
-
-.error-msg {
-  color: #ff8080;
-  font-size: 0.9rem;
-}
+.error-msg { color: #ff8080; font-size: 0.9rem; }

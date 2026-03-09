@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__serena__list_dir",
+      "Bash(npm create vite@latest . -- --template react-ts)",
+      "Bash(npm create vite@latest . -- --template react-ts --force)",
+      "Bash(npx create-vite@latest . --template react-ts)",
+      "Read(//tmp/**)",
+      "Bash(npm create vite@latest view_algorithm -- --template react-ts)",
+      "Bash(npm install)",
+      "Bash(npm install -D tailwindcss @tailwindcss/vite)",
+      "Bash(npm run build)",
+      "Bash(__NEW_LINE_92dadb69022f1150__ sed -i \"s/^import { AlgorithmCategory } from ''.\\\\/types'';$/import type { AlgorithmCategory } from ''.\\\\/types'';/\" /work/claude-practice/view_algorithm/src/algorithms/index.ts)",
+      "Bash(sed -i \"s/^import { AlgorithmCategory, AlgorithmDefinition } from ''\\\\.\\\\.\\\\/algorithms'';$/import type { AlgorithmCategory, AlgorithmDefinition } from ''..\\\\/algorithms'';/\" /work/claude-practice/view_algorithm/src/components/AlgorithmSelector.tsx)",
+      "Bash(sed -i \"s/^import { AlgorithmParameter, ArrayOrder } from ''\\\\.\\\\.\\\\/algorithms'';$/import type { AlgorithmParameter, ArrayOrder } from ''..\\\\/algorithms'';/\" /work/claude-practice/view_algorithm/src/components/ParameterPanel.tsx)",
+      "Bash(sed -i \"s/^import { AlgorithmDefinition } from ''\\\\.\\\\.\\\\/algorithms'';$/import type { AlgorithmDefinition } from ''..\\\\/algorithms'';/\" /work/claude-practice/view_algorithm/src/components/StatsDisplay.tsx)",
+      "Bash(sed -i \"s/^import { ArrayElement } from ''\\\\.\\\\.\\\\/algorithms'';$/import type { ArrayElement } from ''..\\\\/algorithms'';/\" /work/claude-practice/view_algorithm/src/components/Visualizer.tsx)",
+      "Bash(sed -i \"s/^import { AlgorithmDefinition, ArrayElement, Step, ArrayOrder, generateArray } from ''\\\\.\\\\.\\\\/algorithms'';$/import type { AlgorithmDefinition, ArrayElement, Step, ArrayOrder } from ''..\\\\/algorithms'';\\\\nimport { generateArray } from ''..\\\\/algorithms'';/\" /work/claude-practice/view_algorithm/src/hooks/useVisualization.ts)",
+      "Bash(npm run dev)"
+    ]
+  }
+}

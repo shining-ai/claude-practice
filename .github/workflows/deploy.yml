@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'todo/**'
+      - 'view_algorithm/**'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -28,18 +29,32 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: todo/package-lock.json
+          cache-dependency-path: |
+            todo/package-lock.json
+            view_algorithm/package-lock.json
 
-      - name: Install dependencies
+      - name: Install dependencies (todo)
         run: npm ci
         working-directory: todo
 
-      - name: Build
+      - name: Build (todo)
         run: npm run build
         working-directory: todo
 
+      - name: Install dependencies (view_algorithm)
+        run: npm ci
+        working-directory: view_algorithm
+
+      - name: Build (view_algorithm)
+        run: npm run build
+        working-directory: view_algorithm
+
       - name: Prepare deploy directory
-        run: mkdir -p deploy/todo && cp -r todo/dist/. deploy/todo/
+        run: |
+          mkdir -p deploy/todo
+          mkdir -p deploy/view_algorithm
+          cp -r todo/dist/. deploy/todo/
+          cp -r view_algorithm/dist/. deploy/view_algorithm/
 
       - uses: actions/upload-pages-artifact@v3
         with:

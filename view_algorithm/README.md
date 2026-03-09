@@ -2,6 +2,8 @@
 
 アルゴリズムの動作をブラウザ上でリアルタイムに可視化する学習用 Web アプリです。
 
+**公開URL:** https://shining-ai.github.io/claude-practice/view_algorithm/
+
 ## 機能
 
 - **アルゴリズム選択** — カテゴリ別にアルゴリズムを選択

@@ -1,0 +1,35 @@
+# 環境変数
+.env
+.env.local
+frontend/.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+venv/
+.venv/
+
+# DB
+*.db
+*.sqlite3
+
+# Node.js
+node_modules/
+.next/
+out/
+dist/
+
+# Docker
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

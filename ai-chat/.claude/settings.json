@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose config --quiet)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(docker compose -f /work/claude-practice/ai-chat/docker-compose.yml config --quiet)",
+      "Bash(curl -s http://localhost:8001/health)",
+      "Bash(python3 -m json.tool)",
+      "Bash(.venv/bin/python -m pytest tests/test_integration.py -v)",
+      "Bash(.venv/bin/python -m pytest tests/ -v --tb=short)",
+      "Bash(/work/claude-practice/ai-chat/backend/app/services/claude_service.py:*)",
+      "Bash(/work/claude-practice/ai-chat/backend/tests/test_claude_service.py:*)"
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+###############################################
+# MediaMTX v1.17+ — Pattern 5 (処理済みストリーム配信用)
+###############################################
+
+logLevel: info
+logDestinations: [stdout]
+
+api: yes
+apiAddress: :9997
+
+authInternalUsers:
+  - user: any
+    pass: ""
+    ips: []
+    permissions:
+      - action: publish
+        path: ""
+      - action: read
+        path: ""
+      - action: playback
+        path: ""
+      - action: api
+        path: ""
+
+rtspAddress: :8554
+rtspEncryption: "no"
+rtspTransports: [tcp, udp]
+
+hls: yes
+hlsAddress: :8888
+hlsAlwaysRemux: yes
+hlsSegmentCount: 7
+hlsSegmentDuration: 1s
+hlsPartDuration: 200ms
+
+webrtc: yes
+webrtcAddress: :8889
+webrtcAdditionalHosts: [127.0.0.1]
+
+srt: no
+
+paths:
+  processed:
+    overridePublisher: yes

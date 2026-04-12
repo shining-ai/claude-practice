@@ -1,0 +1,57 @@
+services:
+  # YOLO処理済みストリームを配信する MediaMTX インスタンス
+  # (rtsp_source の MediaMTX とはポートが異なる)
+  mediamtx-out:
+    image: bluenviron/mediamtx:latest
+    container_name: mediamtx-out
+    restart: unless-stopped
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml:ro
+    ports:
+      - "8556:8554"      # RTSP (処理済みストリームを外部から直接再生したい場合)
+      - "8898:8888"      # HLS
+      - "8899:8889"      # WebRTC HTTP (WHEP/WHIP)
+      - "8199:8189/udp"  # WebRTC ICE/UDP
+    networks:
+      - 05_net
+
+  # Python YOLO プロセッサ: rtsp_source から pull → YOLO → FFmpeg RTSP push
+  processor:
+    build: ./processor
+    container_name: processor-yolo
+    restart: unless-stopped
+    environment:
+      RTSP_IN:    rtsp://mediamtx:8554/live       # rtsp_source の MediaMTX
+      RTSP_OUT:   rtsp://mediamtx-out:8554/processed
+      MODEL:      yolov8n.pt
+      CONFIDENCE: "0.5"
+    networks:
+      - rtsp_net   # rtsp_source へのアクセス用
+      - 05_net     # mediamtx-out へのアクセス用
+    depends_on:
+      - mediamtx-out
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # ブラウザ向け視聴ページ (hls.js + WHEP)
+  frontend:
+    build: ./frontend
+    container_name: mediamtx-frontend
+    restart: unless-stopped
+    environment:
+      PORT: "8005"
+    ports:
+      - "8005:8005"
+    networks:
+      - 05_net
+
+networks:
+  rtsp_net:
+    external: true
+  05_net:
+    driver: bridge

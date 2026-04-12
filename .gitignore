@@ -27,3 +27,8 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Large video files (use local copy)
+video_stream/videos/*.mp4
+video_stream/videos/*.mkv
+video_stream/videos/*.avi

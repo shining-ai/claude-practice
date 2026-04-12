@@ -1,0 +1,36 @@
+services:
+  webrtc:
+    build: ./app
+    container_name: webrtc-yolo
+    restart: unless-stopped
+    environment:
+      RTSP_URL: rtsp://mediamtx:8554/live
+      MODEL: yolov8n.pt
+      CONFIDENCE: "0.5"
+      PORT: "8003"
+      # ICE候補のIPをブラウザから到達可能なアドレスに上書きする。
+      # Docker Desktop (WSL2) では 127.0.0.1 を指定すると
+      # ports マッピング経由でコンテナのUDPソケットに届く。
+      ICE_HOST: "127.0.0.1"
+    ports:
+      - "8003:8003"
+      # WebRTC ICE 用 UDP ポート範囲 (rtsp_source の 8189/udp と衝突しないよう 8300 番台を使用)。
+      # sysctls で ip_local_port_range を同じ範囲に絞るため
+      # aiortc が bind(0) で選ぶポートが必ずこの範囲に収まる。
+      - "8300-8399:8300-8399/udp"
+    sysctls:
+      # bind(0) で割り当てられるエフェメラルポートをマップ済み範囲に限定する
+      net.ipv4.ip_local_port_range: "8300 8399"
+    networks:
+      - rtsp_net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+networks:
+  rtsp_net:
+    external: true

@@ -1,0 +1,5 @@
+fastapi==0.115.12
+uvicorn[standard]==0.34.0
+opencv-python-headless==4.11.0.86
+# CPU-only torch (ultralytics の依存。GPU 不要の場合は --index-url で軽量版を使う)
+ultralytics==8.3.99

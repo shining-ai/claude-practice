@@ -1,0 +1,25 @@
+services:
+  websocket:
+    build: ./app
+    container_name: websocket-yolo
+    restart: unless-stopped
+    ports:
+      - "8002:8000"
+    environment:
+      RTSP_URL: rtsp://mediamtx:8554/live
+      MODEL: yolov8n.pt
+      JPEG_QUALITY: "80"
+      CONFIDENCE: "0.5"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - rtsp_net
+
+networks:
+  rtsp_net:
+    external: true

@@ -1,0 +1,27 @@
+services:
+  hls:
+    build: ./app
+    container_name: hls-yolo
+    restart: unless-stopped
+    environment:
+      RTSP_URL: rtsp://mediamtx:8554/live
+      MODEL: yolov8n.pt
+      CONFIDENCE: "0.5"
+      PORT: "8004"
+      HLS_TIME: "2"
+      HLS_LIST_SIZE: "5"
+    ports:
+      - "8004:8004"
+    networks:
+      - rtsp_net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+networks:
+  rtsp_net:
+    external: true

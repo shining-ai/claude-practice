@@ -1,0 +1,53 @@
+###############################################
+# MediaMTX v1.17+ — 共有 RTSP ソース設定
+###############################################
+
+logLevel: info
+logDestinations: [stdout]
+
+# REST API (ステータス確認: http://localhost:9997/v3/paths/list)
+api: yes
+apiAddress: :9997
+
+# 認証: any ユーザー (パスなし) に全操作を許可
+authInternalUsers:
+  - user: any
+    pass: ""
+    ips: []
+    permissions:
+      - action: publish
+        path: ""
+      - action: read
+        path: ""
+      - action: playback
+        path: ""
+      - action: api
+        path: ""
+
+# RTSP サーバー
+rtspAddress: :8554
+rtspEncryption: "no"
+rtspTransports: [tcp, udp]
+
+# HLS (ブラウザから直接確認できる)
+hls: yes
+hlsAddress: :8888
+hlsAlwaysRemux: yes       # publisher 接続直後からセグメント生成開始
+hlsSegmentCount: 7        # LL-HLS の最低要件 (3 だとエラーになる)
+hlsSegmentDuration: 1s
+hlsPartDuration: 200ms    # Low-Latency HLS 用パーシャルセグメント長
+
+# WebRTC / WHEP
+webrtc: yes
+webrtcAddress: :8889
+# WSL/Docker 環境: ホスト IP を ICE candidate として明示
+webrtcAdditionalHosts: [127.0.0.1]
+
+# SRT は不使用
+srt: no
+
+# パス設定
+paths:
+  live:
+    # 再パブリッシュを許可 (streamer 再起動時)
+    overridePublisher: yes

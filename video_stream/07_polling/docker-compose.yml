@@ -1,0 +1,26 @@
+services:
+  polling:
+    build: ./app
+    container_name: polling-yolo
+    restart: unless-stopped
+    environment:
+      RTSP_URL: rtsp://mediamtx:8554/live
+      MODEL: yolov8n.pt
+      CONFIDENCE: "0.5"
+      PORT: "8007"
+      SAVE_INTERVAL: "1.0"
+    ports:
+      - "8007:8007"
+    networks:
+      - rtsp_net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+networks:
+  rtsp_net:
+    external: true

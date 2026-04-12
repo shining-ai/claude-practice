@@ -1,0 +1,26 @@
+services:
+  gstreamer:
+    build: ./app
+    container_name: gstreamer-yolo
+    restart: unless-stopped
+    environment:
+      RTSP_URL:   rtsp://mediamtx:8554/live
+      MODEL:      yolov8n.pt
+      CONFIDENCE: "0.5"
+      PORT:       "8008"
+      USE_NVENC:  "false"   # GPU H.264 エンコード: true にすると nvh264enc を使用
+    ports:
+      - "8008:8008"
+    networks:
+      - rtsp_net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+networks:
+  rtsp_net:
+    external: true
